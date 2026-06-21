@@ -7,9 +7,10 @@ interface ImageUploaderProps {
   onChange: (url: string) => void;
   onRemove: () => void;
   label?: string;
+  compact?: boolean;
 }
 
-const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onChange, onRemove, label = 'Imagen' }) => {
+const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onChange, onRemove, label = 'Imagen', compact = false }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,8 +70,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({ value, onChange, onRemove
       <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
       
       {value ? (
-        <div className="relative inline-block border rounded-md overflow-hidden bg-gray-100">
-          <img src={value} alt="Preview" className="max-h-64 object-contain" />
+        <div className={`relative inline-block border rounded-md overflow-hidden bg-gray-100 ${compact ? 'w-24 h-24' : 'w-full max-w-sm h-64'}`}>
+          <img src={value} alt="Preview" className="w-full h-full object-cover" />
           <button
             type="button"
             onClick={handleRemove}

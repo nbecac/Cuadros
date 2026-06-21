@@ -23,6 +23,14 @@ const ProductGrid: React.FC<ProductGridProps> = ({ selectedCategory }) => {
   }
 
   const getGridClass = () => {
+    const columnClassMap: Record<number, string> = {
+      2: 'lg:grid-cols-2',
+      3: 'lg:grid-cols-3',
+      4: 'lg:grid-cols-4',
+    };
+    const desktopCols = design.columnasDesktop || 3;
+    const desktopClass = columnClassMap[desktopCols] || 'lg:grid-cols-3';
+
     switch (design.estiloGrilla) {
       case 'masonry':
         return 'masonry-grid';
@@ -32,7 +40,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ selectedCategory }) => {
         return 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16';
       case 'galeria':
       default:
-        return `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-${design.columnasDesktop || 3} gap-8`;
+        return `grid grid-cols-1 sm:grid-cols-2 ${desktopClass} gap-x-8 gap-y-12`;
     }
   };
 

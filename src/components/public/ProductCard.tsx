@@ -16,7 +16,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
       className="group cursor-pointer flex flex-col gap-4"
       onClick={onClick}
     >
-      <div className="relative overflow-hidden bg-gray-100 aspect-[3/4] flex items-center justify-center">
+      <div className="relative overflow-hidden bg-gray-100 aspect-[4/5] flex items-center justify-center">
         {product.imagenPrincipal ? (
           <img 
             src={product.imagenPrincipal} 

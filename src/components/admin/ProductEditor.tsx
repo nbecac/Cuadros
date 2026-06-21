@@ -37,8 +37,14 @@ const ProductEditor: React.FC<ProductEditorProps> = ({ productId, onClose }) => 
   };
 
   const handleSave = () => {
+    const cleanGallery = (formData.galeria || []).filter((url) => url && url.trim() !== '');
+    const productDataToSave = {
+      ...formData,
+      galeria: cleanGallery
+    };
+
     if (existingProduct) {
-      updateProduct(existingProduct.id, formData);
+      updateProduct(existingProduct.id, productDataToSave);
     } else {
       const newProduct: Product = {
         id: generateId(),
@@ -46,7 +52,7 @@ const ProductEditor: React.FC<ProductEditorProps> = ({ productId, onClose }) => 
         orden: products.length > 0 ? Math.max(...products.map(p => p.orden)) + 1 : 1,
         creadoEn: new Date().toISOString(),
         actualizadoEn: new Date().toISOString(),
-        ...formData
+        ...productDataToSave
       };
       addProduct(newProduct);
     }
@@ -108,14 +114,14 @@ const ProductEditor: React.FC<ProductEditorProps> = ({ productId, onClose }) => 
                     <ImageUploader 
                       label={`Imagen Extra ${index + 1}`}
                       value={url !== '' ? url : undefined}
+                      compact={true}
                       onChange={(newUrl) => {
                         const newGaleria = [...(formData.galeria || [])];
                         newGaleria[index] = newUrl;
                         setFormData(prev => ({ ...prev, galeria: newGaleria }));
                       }}
                       onRemove={() => {
-                        const newGaleria = [...(formData.galeria || [])];
-                        newGaleria[index] = ''; // O removemos el item? Mejor lo vaciamos para subir otra o quitarlo con el botón eliminar
+                        const newGaleria = [...(formData.galeria || [])].filter((_, i) => i !== index);
                         setFormData(prev => ({ ...prev, galeria: newGaleria }));
                       }}
                     />

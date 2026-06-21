@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { X } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Product } from '../../types/catalog';
 import { formatPrice } from '../../utils/formatters';
 import { createWhatsAppLink } from '../../utils/whatsapp';
@@ -14,6 +14,10 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
   const { contact } = useCatalogStore();
   const isSold = product.estado === 'vendido';
   const isReserved = product.estado === 'reservado';
+
+  const images = [product.imagenPrincipal, ...(product.galeria || [])].filter(Boolean) as string[];
+  const [activeIndex, setActiveIndex] = useState(0);
+  const activeImage = images[activeIndex];
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -34,16 +38,24 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
     }
   };
 
+  const nextImage = () => {
+    setActiveIndex((prev) => (prev + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    setActiveIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
   const whatsappLink = contact.whatsapp 
     ? createWhatsAppLink(contact.whatsapp, contact.mensajeWhatsAppPrellenado, product.titulo)
     : '';
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-sm p-4 sm:p-6 lg:p-12 overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 backdrop-blur-sm p-4 sm:p-6 lg:p-12"
       onClick={handleBackdropClick}
     >
-      <div className="relative bg-white text-gray-900 w-full max-w-6xl max-h-full flex flex-col md:flex-row shadow-2xl animate-in fade-in zoom-in-95 duration-300">
+      <div className="relative bg-white text-gray-900 w-full max-w-6xl max-h-[90vh] flex flex-col md:flex-row shadow-2xl animate-in fade-in zoom-in-95 duration-300 overflow-hidden">
         
         <button 
           onClick={onClose}
@@ -54,37 +66,68 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
         </button>
 
         {/* Image Section */}
-        <div className="w-full md:w-3/5 bg-gray-50 flex flex-col items-center justify-center p-4 sm:p-8 min-h-[40vh] overflow-y-auto">
-          {product.imagenPrincipal ? (
-            <img 
-              src={product.imagenPrincipal} 
-              alt={product.titulo || 'Obra'} 
-              className="max-w-full max-h-[70vh] object-contain shadow-lg mb-4"
-            />
+        <div className="w-full md:w-3/5 bg-gray-50 flex flex-col items-center justify-center relative p-4 min-h-[40vh] md:min-h-full">
+          {activeImage ? (
+            <div className="relative w-full flex items-center justify-center h-full">
+              {images.length > 1 && (
+                <button 
+                  onClick={prevImage}
+                  className="absolute left-2 md:left-4 p-2 bg-white/70 hover:bg-white text-gray-800 rounded-full shadow-md transition-all z-10"
+                >
+                  <ChevronLeft size={24} />
+                </button>
+              )}
+              
+              <img 
+                src={activeImage} 
+                alt={product.titulo || 'Obra'} 
+                className="w-full max-h-[75vh] object-contain shadow-sm"
+              />
+
+              {images.length > 1 && (
+                <button 
+                  onClick={nextImage}
+                  className="absolute right-2 md:right-4 p-2 bg-white/70 hover:bg-white text-gray-800 rounded-full shadow-md transition-all z-10"
+                >
+                  <ChevronRight size={24} />
+                </button>
+              )}
+              
+              {images.length > 1 && (
+                <div className="absolute top-4 left-4 bg-black/50 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
+                  {activeIndex + 1} / {images.length}
+                </div>
+              )}
+            </div>
           ) : (
-            <div className="w-full aspect-square bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-400 max-h-[70vh] mb-4">
+            <div className="w-full aspect-square max-h-[75vh] bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center text-gray-400 mb-4">
               <span className="font-light tracking-widest">SIN IMAGEN</span>
             </div>
           )}
           
-          {/* Galería extra */}
-          {product.galeria && product.galeria.length > 0 && (
-            <div className="flex gap-4 overflow-x-auto w-full py-4 snap-x">
-              {product.galeria.map((imgUrl, idx) => (
-                <img 
+          {/* Thumbnails */}
+          {images.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto w-full py-4 mt-auto justify-center">
+              {images.map((imgUrl, idx) => (
+                <button
                   key={idx}
-                  src={imgUrl} 
-                  alt={`${product.titulo || 'Detalle'} ${idx + 1}`}
-                  className="h-24 w-auto object-cover border shadow-sm snap-center"
-                  loading="lazy"
-                />
+                  onClick={() => setActiveIndex(idx)}
+                  className={`relative flex-shrink-0 transition-all ${activeIndex === idx ? 'ring-2 ring-black' : 'opacity-60 hover:opacity-100'}`}
+                >
+                  <img 
+                    src={imgUrl} 
+                    alt={`Miniatura ${idx + 1}`}
+                    className="w-16 h-16 object-cover"
+                    loading="lazy"
+                  />
+                </button>
               ))}
             </div>
           )}
         </div>
 
         {/* Details Section */}
-        <div className="w-full md:w-2/5 p-6 sm:p-8 lg:p-12 flex flex-col overflow-y-auto max-h-[80vh]">
+        <div className="w-full md:w-2/5 p-6 sm:p-8 lg:p-12 flex flex-col overflow-y-auto max-h-[40vh] md:max-h-full">
           <div className="mb-8">
             {(isSold || isReserved) && (
               <span className="inline-block px-3 py-1 mb-4 text-xs tracking-widest uppercase border border-gray-300">
