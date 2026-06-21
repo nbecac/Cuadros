@@ -22,14 +22,17 @@ const AdminLogin: React.FC = () => {
           throw new Error('VITE_ADMIN_EMAIL no está configurado en .env');
         }
         
-        const { error: authError } = await supabase.auth.signInWithPassword({
+        const { data, error: authError } = await supabase.auth.signInWithPassword({
           email: adminEmail,
           password: password,
         });
         
         if (authError) throw authError;
+        if (data.session?.user?.email !== adminEmail) {
+          throw new Error('El usuario no corresponde al administrador.');
+        }
         
-        sessionStorage.setItem('admin_auth', 'true');
+        navigate('/admin');
         navigate('/admin');
       } else {
         // Fallback local mode

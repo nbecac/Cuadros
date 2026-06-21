@@ -8,28 +8,22 @@ import { useEffect, useState } from 'react';
 import { supabase, isSupabaseConfigured } from './services/supabaseClient';
 
 const AdminRoute = ({ children }: { children: React.ReactNode }) => {
-  const isAuthenticated = sessionStorage.getItem('admin_auth') === 'true';
   const isCloud = isSupabaseConfigured();
+  const isAuthenticatedLocal = sessionStorage.getItem('admin_auth') === 'true';
   const [authChecked, setAuthChecked] = useState(!isCloud);
   const [session, setSession] = useState<any>(null);
 
   useEffect(() => {
     if (isCloud && supabase) {
+      sessionStorage.removeItem('admin_auth');
+      
       supabase.auth.getSession().then(({ data: { session } }) => {
         setSession(session);
-        if (!session) {
-          sessionStorage.removeItem('admin_auth');
-        } else {
-          sessionStorage.setItem('admin_auth', 'true');
-        }
         setAuthChecked(true);
       });
 
       const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
         setSession(session);
-        if (!session) {
-          sessionStorage.removeItem('admin_auth');
-        }
       });
 
       return () => subscription.unsubscribe();
@@ -40,7 +34,11 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
     return <div className="flex justify-center items-center h-screen">Cargando...</div>;
   }
 
-  if (!isAuthenticated || (isCloud && !session)) {
+  const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
+  const isCloudAuthenticated = isCloud && session && session.user?.email === adminEmail;
+  const isLocalAuthenticated = !isCloud && isAuthenticatedLocal;
+
+  if (!isCloudAuthenticated && !isLocalAuthenticated) {
     return <Navigate to="/admin/login" replace />;
   }
 

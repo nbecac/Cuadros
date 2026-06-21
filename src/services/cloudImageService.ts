@@ -20,6 +20,12 @@ export const uploadImage = async (file: File): Promise<string> => {
     return compressedDataUrl;
   }
 
+  // Check session
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    throw new Error('No hay sesión de administrador.');
+  }
+
   // Convert data URL → Blob for Supabase upload
   const response = await fetch(compressedDataUrl);
   const blob = await response.blob();
@@ -31,7 +37,9 @@ export const uploadImage = async (file: File): Promise<string> => {
     .from(BUCKET_NAME)
     .upload(filePath, blob, { contentType: blob.type, upsert: false });
 
-  if (uploadError) throw uploadError;
+  if (uploadError) {
+    throw new Error(`Error subiendo imagen al bucket catalog-images: ${uploadError.message}`);
+  }
 
   const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(filePath);
   return data.publicUrl;

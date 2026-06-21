@@ -7,6 +7,23 @@ import type { Product, Category, DesignSettings, ContactSettings, SiteTextSettin
 
 // ─── Helpers ──────────────────────────────────────────────
 
+const throwSupabaseError = (operation: string, table: string, error: any): never => {
+  console.error(`[Supabase error] ${operation} on ${table}`, {
+    code: error?.code,
+    message: error?.message,
+    details: error?.details,
+    hint: error?.hint,
+    status: error?.status,
+    full: error,
+  });
+
+  throw new Error(
+    `${operation} falló en ${table}: ${error?.message || 'Error desconocido'}`
+    + (error?.code ? ` | code: ${error.code}` : '')
+    + (error?.details ? ` | details: ${error.details}` : '')
+    + (error?.hint ? ` | hint: ${error.hint}` : '')
+  );
+};
 /** Map DB snake_case row → app camelCase Product */
 const rowToProduct = (row: any): Product => ({
   id: row.id,
@@ -82,14 +99,14 @@ export const cloudGetProducts = async (): Promise<Product[]> => {
     .from('products')
     .select('*')
     .order('orden', { ascending: true });
-  if (error) throw error;
+  if (error) throwSupabaseError('Get', 'products', error);
   return (data || []).map(rowToProduct);
 };
 
 export const cloudCreateProduct = async (product: Product): Promise<void> => {
   if (!supabase) throw new Error('Supabase not configured');
   const { error } = await supabase.from('products').insert(productToRow(product));
-  if (error) throw error;
+  if (error) throwSupabaseError('Create', 'products', error);
 };
 
 export const cloudUpdateProduct = async (id: string, updates: Partial<Product>): Promise<void> => {
@@ -98,20 +115,20 @@ export const cloudUpdateProduct = async (id: string, updates: Partial<Product>):
     .from('products')
     .update({ ...productToRow(updates), actualizado_en: new Date().toISOString() })
     .eq('id', id);
-  if (error) throw error;
+  if (error) throwSupabaseError('Update', 'products', error);
 };
 
 export const cloudDeleteProduct = async (id: string): Promise<void> => {
   if (!supabase) throw new Error('Supabase not configured');
   const { error } = await supabase.from('products').delete().eq('id', id);
-  if (error) throw error;
+  if (error) throwSupabaseError('Delete', 'products', error);
 };
 
 export const cloudUpdateProductOrder = async (products: { id: string; orden: number }[]): Promise<void> => {
   if (!supabase) throw new Error('Supabase not configured');
   for (const p of products) {
     const { error } = await supabase.from('products').update({ orden: p.orden }).eq('id', p.id);
-    if (error) throw error;
+    if (error) throwSupabaseError('Update Order', 'products', error);
   }
 };
 
@@ -123,7 +140,7 @@ export const cloudGetCategories = async (): Promise<Category[]> => {
     .from('categories')
     .select('*')
     .order('orden', { ascending: true });
-  if (error) throw error;
+  if (error) throwSupabaseError('Get', 'categories', error);
   return (data || []).map(rowToCategory);
 };
 
@@ -135,13 +152,13 @@ export const cloudCreateCategory = async (category: Category): Promise<void> => 
     activa: category.activa,
     orden: category.orden,
   });
-  if (error) throw error;
+  if (error) throwSupabaseError('Create', 'categories', error);
 };
 
 export const cloudUpdateCategory = async (id: string, updates: Partial<Category>): Promise<void> => {
   if (!supabase) throw new Error('Supabase not configured');
   const { error } = await supabase.from('categories').update(updates).eq('id', id);
-  if (error) throw error;
+  if (error) throwSupabaseError('Update', 'categories', error);
 };
 
 export const cloudDeleteCategory = async (id: string): Promise<void> => {
@@ -151,16 +168,16 @@ export const cloudDeleteCategory = async (id: string): Promise<void> => {
     .from('products')
     .update({ categoria_id: null })
     .eq('categoria_id', id);
-  if (unlinkErr) throw unlinkErr;
+  if (unlinkErr) throwSupabaseError('Unlink Products', 'categories', unlinkErr);
   const { error } = await supabase.from('categories').delete().eq('id', id);
-  if (error) throw error;
+  if (error) throwSupabaseError('Delete', 'categories', error);
 };
 
 export const cloudUpdateCategoryOrder = async (categories: { id: string; orden: number }[]): Promise<void> => {
   if (!supabase) throw new Error('Supabase not configured');
   for (const c of categories) {
     const { error } = await supabase.from('categories').update({ orden: c.orden }).eq('id', c.id);
-    if (error) throw error;
+    if (error) throwSupabaseError('Update Order', 'categories', error);
   }
 };
 
@@ -173,7 +190,7 @@ export const cloudGetDesign = async (): Promise<DesignSettings | null> => {
     .select('*')
     .eq('id', 'main')
     .single();
-  if (error && error.code !== 'PGRST116') throw error; // PGRST116 = not found
+  if (error && error.code !== 'PGRST116') throwSupabaseError('Get', 'design_settings', error); // PGRST116 = not found
   return data ? rowToDesign(data) : null;
 };
 
@@ -194,7 +211,7 @@ export const cloudSaveDesign = async (settings: DesignSettings): Promise<void> =
     mostrar_footer: settings.mostrarFooter,
     actualizado_en: new Date().toISOString(),
   });
-  if (error) throw error;
+  if (error) throwSupabaseError('Save', 'design_settings', error);
 };
 
 // ─── Contact ──────────────────────────────────────────────
@@ -206,7 +223,7 @@ export const cloudGetContact = async (): Promise<ContactSettings | null> => {
     .select('*')
     .eq('id', 'main')
     .single();
-  if (error && error.code !== 'PGRST116') throw error;
+  if (error && error.code !== 'PGRST116') throwSupabaseError('Get', 'contact_settings', error);
   return data ? rowToContact(data) : null;
 };
 
@@ -221,7 +238,7 @@ export const cloudSaveContact = async (settings: ContactSettings): Promise<void>
     mensaje_whatsapp_prellenado: settings.mensajeWhatsAppPrellenado ?? null,
     actualizado_en: new Date().toISOString(),
   });
-  if (error) throw error;
+  if (error) throwSupabaseError('Save', 'contact_settings', error);
 };
 
 export const cloudSaveTexts = async (settings: SiteTextSettings): Promise<void> => {
@@ -239,7 +256,7 @@ export const cloudSaveTexts = async (settings: SiteTextSettings): Promise<void> 
     firma: settings.firma ?? null,
     actualizado_en: new Date().toISOString(),
   });
-  if (error) throw error;
+  if (error) throwSupabaseError('Save', 'site_texts_settings', error);
 };
 
 // ─── Bulk load ────────────────────────────────────────────

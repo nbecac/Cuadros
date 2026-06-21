@@ -15,7 +15,7 @@ export const demoData: CatalogData = {
       orden: 1,
       creadoEn: new Date().toISOString(),
       actualizadoEn: new Date().toISOString(),
-      categoriaId: 'cat1',
+      categoriaId: '11111111-1111-4111-a111-111111111111',
       // Using CSS gradient placeholder as default
     },
     {
@@ -30,7 +30,7 @@ export const demoData: CatalogData = {
       orden: 2,
       creadoEn: new Date().toISOString(),
       actualizadoEn: new Date().toISOString(),
-      categoriaId: 'cat1',
+      categoriaId: '11111111-1111-4111-a111-111111111111',
     },
     {
       id: generateId(),
@@ -42,24 +42,24 @@ export const demoData: CatalogData = {
       orden: 3,
       creadoEn: new Date().toISOString(),
       actualizadoEn: new Date().toISOString(),
-      categoriaId: 'cat2',
+      categoriaId: '22222222-2222-4222-a222-222222222222',
     }
   ],
   categories: [
     {
-      id: 'cat1',
+      id: '11111111-1111-4111-a111-111111111111',
       nombre: 'Cuadros',
       activa: true,
       orden: 1,
     },
     {
-      id: 'cat2',
+      id: '22222222-2222-4222-a222-222222222222',
       nombre: 'Cojines',
       activa: true,
       orden: 2,
     },
     {
-      id: 'cat3',
+      id: '33333333-3333-4333-a333-333333333333',
       nombre: 'Vendidos',
       activa: false,
       orden: 3,
