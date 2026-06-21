@@ -210,7 +210,7 @@ export const cloudSaveDesign = async (settings: DesignSettings): Promise<void> =
     mostrar_contacto: settings.mostrarContacto,
     mostrar_footer: settings.mostrarFooter,
     actualizado_en: new Date().toISOString(),
-  });
+  }, { onConflict: 'id' });
   if (error) throwSupabaseError('Save', 'design_settings', error);
 };
 
@@ -237,7 +237,7 @@ export const cloudSaveContact = async (settings: ContactSettings): Promise<void>
     correo: settings.correo ?? null,
     mensaje_whatsapp_prellenado: settings.mensajeWhatsAppPrellenado ?? null,
     actualizado_en: new Date().toISOString(),
-  });
+  }, { onConflict: 'id' });
   if (error) throwSupabaseError('Save', 'contact_settings', error);
 };
 
@@ -255,7 +255,7 @@ export const cloudSaveTexts = async (settings: SiteTextSettings): Promise<void> 
     texto_footer: settings.textoFooter ?? null,
     firma: settings.firma ?? null,
     actualizado_en: new Date().toISOString(),
-  });
+  }, { onConflict: 'id' });
   if (error) throwSupabaseError('Save', 'site_texts_settings', error);
 };
 

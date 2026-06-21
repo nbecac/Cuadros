@@ -17,13 +17,27 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
     if (isCloud && supabase) {
       sessionStorage.removeItem('admin_auth');
       
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        setSession(session);
-        setAuthChecked(true);
+      supabase!.auth.getSession().then(({ data: { session } }) => {
+        const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
+        if (session && session.user?.email !== adminEmail) {
+          supabase!.auth.signOut().then(() => {
+            setSession(null);
+            setAuthChecked(true);
+          });
+        } else {
+          setSession(session);
+          setAuthChecked(true);
+        }
       });
 
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-        setSession(session);
+      const { data: { subscription } } = supabase!.auth.onAuthStateChange((_event, session) => {
+        const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
+        if (session && session.user?.email !== adminEmail) {
+          supabase!.auth.signOut();
+          setSession(null);
+        } else {
+          setSession(session);
+        }
       });
 
       return () => subscription.unsubscribe();

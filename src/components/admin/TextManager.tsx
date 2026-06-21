@@ -33,8 +33,9 @@ export const TextManager: React.FC = () => {
       await updateTextSettings(formData);
       setSaveMessage('Textos actualizados exitosamente.');
       setTimeout(() => setSaveMessage(''), 3000);
-    } catch (error) {
-      setSaveMessage('Error al actualizar textos.');
+    } catch (error: any) {
+      console.error(error);
+      setSaveMessage(`Error al actualizar textos: ${error.message || 'Desconocido'}`);
     } finally {
       setIsSaving(false);
     }
@@ -170,7 +171,9 @@ export const TextManager: React.FC = () => {
             {isSaving ? 'Guardando...' : 'Guardar Textos'}
           </button>
           {saveMessage && (
-            <span className="text-sm text-green-600 font-medium">{saveMessage}</span>
+            <span className={`text-sm font-medium ${saveMessage.startsWith('Error') ? 'text-red-600' : 'text-green-600'}`}>
+              {saveMessage}
+            </span>
           )}
         </div>
       </form>

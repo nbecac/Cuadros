@@ -10,9 +10,14 @@ interface AdminSidebarProps {
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChange }) => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    sessionStorage.removeItem('admin_auth');
-    navigate('/admin/login');
+  const handleLogout = async () => {
+    import('../../services/supabaseClient').then(async ({ supabase, isSupabaseConfigured }) => {
+      if (isSupabaseConfigured() && supabase) {
+        await supabase.auth.signOut();
+      }
+      sessionStorage.removeItem('admin_auth');
+      navigate('/admin/login');
+    });
   };
 
   const menuItems = [

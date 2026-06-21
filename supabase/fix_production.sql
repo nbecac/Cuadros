@@ -14,6 +14,21 @@ create table if not exists public.site_texts_settings (
   actualizado_en timestamptz not null default now()
 );
 
+-- Ensure the correct column exists
+alter table public.site_texts_settings add column if not exists texto_footer text;
+
+-- Migrate data if the old column existed
+do $$
+begin
+  if exists (
+    select from information_schema.columns 
+    where table_schema = 'public' 
+    and table_name = 'site_texts_settings' 
+    and column_name = 'footer_texto'
+  ) then
+    execute 'update public.site_texts_settings set texto_footer = footer_texto where texto_footer is null';
+  end if;
+end $$;
 alter table public.site_texts_settings enable row level security;
 
 drop policy if exists "Lectura pública de textos" on public.site_texts_settings;
