@@ -70,7 +70,9 @@ create table public.site_texts_settings (
   titulo_catalogo text,
   texto_catalogo text,
   titulo_contacto text,
-  footer_texto text,
+  texto_contacto text,
+  texto_footer text,
+  firma text,
   actualizado_en timestamptz not null default now()
 );
 

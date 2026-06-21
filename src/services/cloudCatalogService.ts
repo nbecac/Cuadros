@@ -3,7 +3,7 @@
  * Pure data logic, no React components.
  */
 import { supabase } from './supabaseClient';
-import type { Product, Category, DesignSettings, ContactSettings, CatalogData } from '../types/catalog';
+import type { Product, Category, DesignSettings, ContactSettings, SiteTextSettings } from '../types/catalog';
 
 // ─── Helpers ──────────────────────────────────────────────
 
@@ -234,7 +234,9 @@ export const cloudSaveTexts = async (settings: SiteTextSettings): Promise<void> 
     titulo_catalogo: settings.tituloCatalogo ?? null,
     texto_catalogo: settings.textoCatalogo ?? null,
     titulo_contacto: settings.tituloContacto ?? null,
-    footer_texto: settings.footerTexto ?? null,
+    texto_contacto: settings.textoContacto ?? null,
+    texto_footer: settings.textoFooter ?? null,
+    firma: settings.firma ?? null,
     actualizado_en: new Date().toISOString(),
   });
   if (error) throw error;
@@ -271,7 +273,9 @@ export const cloudLoadAllData = async (): Promise<{
     tituloCatalogo: textsRes.data.titulo_catalogo ?? '',
     textoCatalogo: textsRes.data.texto_catalogo ?? '',
     tituloContacto: textsRes.data.titulo_contacto ?? '',
-    footerTexto: textsRes.data.footer_texto ?? '',
+    textoContacto: textsRes.data.texto_contacto ?? '',
+    textoFooter: textsRes.data.texto_footer ?? '',
+    firma: textsRes.data.firma ?? '',
   } : null;
 
   // Import demoData only as last-resort defaults
