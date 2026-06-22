@@ -7,6 +7,15 @@ interface AdminSidebarProps {
   onTabChange: (tab: string) => void;
 }
 
+export const navItems = [
+  { id: 'textos', label: 'Textos', icon: FileText },
+  { id: 'obras', label: 'Obras', icon: Image },
+  { id: 'categorias', label: 'Categorías', icon: Layers },
+  { id: 'diseno', label: 'Diseño', icon: Palette },
+  { id: 'contacto', label: 'Contacto', icon: Mail },
+  { id: 'respaldo', label: 'Respaldo', icon: Database },
+];
+
 const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChange }) => {
   const navigate = useNavigate();
 
@@ -20,23 +29,14 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChange }) =
     });
   };
 
-  const menuItems = [
-    { id: 'textos', label: 'Textos', icon: FileText },
-    { id: 'obras', label: 'Obras', icon: Image },
-    { id: 'categorias', label: 'Categorías', icon: Layers },
-    { id: 'diseno', label: 'Diseño', icon: Palette },
-    { id: 'contacto', label: 'Contacto', icon: Mail },
-    { id: 'respaldo', label: 'Respaldo', icon: Database },
-  ];
-
   return (
-    <div className="w-64 bg-gray-900 text-white flex flex-col h-screen sticky top-0">
+    <div className="w-64 bg-gray-900 text-white hidden lg:flex flex-col h-screen sticky top-0">
       <div className="p-6 border-b border-gray-800">
         <h2 className="text-xl font-semibold tracking-wider">Panel Admin</h2>
       </div>
       
-      <nav className="flex-1 p-4 space-y-1">
-        {menuItems.map((item) => {
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
           return (
@@ -62,14 +62,14 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, onTabChange }) =
           className="w-full flex items-center px-4 py-2 text-sm font-medium text-blue-400 hover:text-blue-300 transition-colors"
         >
           <ExternalLink className="mr-3 h-5 w-5" />
-          Ver página pública
+          Ver sitio
         </a>
         <button
           onClick={handleLogout}
           className="w-full flex items-center px-4 py-2 text-sm font-medium text-gray-300 hover:text-red-400 transition-colors"
         >
           <LogOut className="mr-3 h-5 w-5" />
-          Cerrar sesión
+          Salir
         </button>
       </div>
     </div>
