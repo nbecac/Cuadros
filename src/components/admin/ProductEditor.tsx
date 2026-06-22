@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useCatalogStore } from '../../store/catalogStore';
 import type { Product, ProductStatus } from '../../types/catalog';
 import { generateId } from '../../utils/id';
 import ImageUploader from './ImageUploader';
+import { uploadImage } from '../../services/cloudImageService';
+import { Loader2 } from 'lucide-react';
 
 interface ProductEditorProps {
   productId: string | null;
@@ -24,6 +26,36 @@ const ProductEditor: React.FC<ProductEditorProps> = ({ productId, onClose }) => 
     categoriaId: categories.length > 0 ? categories[0].id : undefined,
     imagenPrincipal: undefined,
   });
+
+  const [isUploadingMultiple, setIsUploadingMultiple] = useState(false);
+  const multipleFileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleMultipleFilesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    setIsUploadingMultiple(true);
+    try {
+      const urls = await Promise.all(
+        files
+          .filter(f => f.type.startsWith('image/'))
+          .map(f => uploadImage(f))
+      );
+      
+      setFormData(prev => ({ 
+        ...prev, 
+        galeria: [...(prev.galeria || []), ...urls] 
+      }));
+    } catch (error) {
+      console.error('Error uploading multiple images:', error);
+      alert('Hubo un error subiendo algunas imágenes.');
+    } finally {
+      setIsUploadingMultiple(false);
+      if (multipleFileInputRef.current) {
+        multipleFileInputRef.current.value = '';
+      }
+    }
+  };
 
   useEffect(() => {
     if (existingProduct) {
@@ -96,12 +128,30 @@ const ProductEditor: React.FC<ProductEditorProps> = ({ productId, onClose }) => 
           <div className="bg-gray-50 p-4 rounded-lg border">
             <div className="flex justify-between items-center mb-3 border-b pb-2">
               <h3 className="text-sm font-medium text-gray-900">Imágenes Extra (Galería)</h3>
-              <button 
-                onClick={() => setFormData(prev => ({ ...prev, galeria: [...(prev.galeria || []), ''] }))}
-                className="text-xs bg-black text-white px-2 py-1 rounded hover:bg-gray-800"
-              >
-                + Agregar Imagen
-              </button>
+              <div className="space-x-2 flex items-center">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  ref={multipleFileInputRef}
+                  onChange={handleMultipleFilesChange}
+                  className="hidden"
+                />
+                <button 
+                  onClick={() => multipleFileInputRef.current?.click()}
+                  disabled={isUploadingMultiple}
+                  className="text-xs bg-white text-gray-800 border border-gray-300 px-2 py-1 rounded hover:bg-gray-100 flex items-center gap-1 disabled:opacity-50"
+                >
+                  {isUploadingMultiple && <Loader2 className="w-3 h-3 animate-spin" />}
+                  Subir varias a la vez
+                </button>
+                <button 
+                  onClick={() => setFormData(prev => ({ ...prev, galeria: [...(prev.galeria || []), ''] }))}
+                  className="text-xs bg-black text-white px-2 py-1 rounded hover:bg-gray-800"
+                >
+                  + Caja vacía
+                </button>
+              </div>
             </div>
             
             <div className="space-y-4">
