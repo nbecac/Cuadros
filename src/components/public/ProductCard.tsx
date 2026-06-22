@@ -7,21 +7,47 @@ interface ProductCardProps {
   onClick: () => void;
 }
 
+const aspectClassMap: Record<string, string> = {
+  cuadrada: 'aspect-square',
+  vertical: 'aspect-[4/5]',
+  horizontal: 'aspect-[5/4]',
+  auto: 'aspect-[4/5]',
+};
+
+const fitClassMap: Record<string, string> = {
+  cover: 'object-cover',
+  contain: 'object-contain',
+};
+
+const positionClassMap: Record<string, string> = {
+  center: 'object-center',
+  top: 'object-top',
+  bottom: 'object-bottom',
+};
+
 const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
   const isSold = product.estado === 'vendido';
   const isReserved = product.estado === 'reservado';
+
+  const aspectClass = aspectClassMap[product.proporcionTarjeta || 'vertical'] || 'aspect-[4/5]';
+  const fitClass = fitClassMap[product.ajusteImagen || 'cover'] || 'object-cover';
+  const positionClass = positionClassMap[product.posicionImagen || 'center'] || 'object-center';
+  const bgClass = product.ajusteImagen === 'contain' ? 'bg-stone-100' : 'bg-gray-100';
+
+  // Apply tamanoTarjeta conditionally if needed (e.g., small padding or similar)
+  // But usually handled by Grid, here we just respect the proportions.
 
   return (
     <div 
       className="group cursor-pointer flex flex-col gap-4"
       onClick={onClick}
     >
-      <div className="relative overflow-hidden bg-gray-100 aspect-[4/5] flex items-center justify-center">
+      <div className={`relative overflow-hidden ${bgClass} ${aspectClass} flex items-center justify-center`}>
         {product.imagenPrincipal ? (
           <img 
             src={product.imagenPrincipal} 
             alt={product.titulo || 'Obra'} 
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            className={`w-full h-full ${fitClass} ${positionClass} transition-transform duration-700 group-hover:scale-105`}
             loading="lazy"
           />
         ) : (

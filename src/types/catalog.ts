@@ -13,6 +13,13 @@ export interface Product {
   estado: ProductStatus;
   categoriaId?: string;
   etiquetas?: string[];
+  
+  // Visual settings per product
+  tamanoTarjeta?: 'pequeno' | 'mediano' | 'grande';
+  proporcionTarjeta?: 'cuadrada' | 'vertical' | 'horizontal' | 'auto';
+  ajusteImagen?: 'cover' | 'contain';
+  posicionImagen?: 'center' | 'top' | 'bottom';
+  tamanoModal?: 'normal' | 'grande' | 'contenido';
   orden: number;
   creadoEn: string;
   actualizadoEn: string;

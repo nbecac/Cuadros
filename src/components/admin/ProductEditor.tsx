@@ -275,6 +275,85 @@ const ProductEditor: React.FC<ProductEditorProps> = ({ productId, onClose }) => 
               className="w-full px-3 py-2 border rounded-md"
             />
           </div>
+
+          <div className="pt-6 border-t mt-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Visualización en la web</h3>
+            <p className="text-sm text-gray-500 mb-4">Estos ajustes solo cambian cómo se ve la obra en la página, no modifican la imagen original.</p>
+            
+            <div className="space-y-4 bg-gray-50 p-4 rounded-lg border">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Tamaño de tarjeta</label>
+                  <select
+                    name="tamanoTarjeta"
+                    value={formData.tamanoTarjeta || 'mediano'}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-md bg-white"
+                  >
+                    <option value="pequeno">Pequeño</option>
+                    <option value="mediano">Mediano</option>
+                    <option value="grande">Grande</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Proporción de tarjeta</label>
+                  <select
+                    name="proporcionTarjeta"
+                    value={formData.proporcionTarjeta || 'vertical'}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-md bg-white"
+                  >
+                    <option value="cuadrada">Cuadrada</option>
+                    <option value="vertical">Vertical</option>
+                    <option value="horizontal">Horizontal</option>
+                    <option value="auto">Automática</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Ajuste de imagen</label>
+                  <select
+                    name="ajusteImagen"
+                    value={formData.ajusteImagen || 'cover'}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-md bg-white"
+                  >
+                    <option value="cover">Recortar para llenar</option>
+                    <option value="contain">Mostrar completa</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Posición de imagen</label>
+                  <select
+                    name="posicionImagen"
+                    value={formData.posicionImagen || 'center'}
+                    onChange={handleChange}
+                    className="w-full px-3 py-2 border rounded-md bg-white"
+                  >
+                    <option value="center">Centro</option>
+                    <option value="top">Arriba</option>
+                    <option value="bottom">Abajo</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Tamaño en modal</label>
+                <select
+                  name="tamanoModal"
+                  value={formData.tamanoModal || 'normal'}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md bg-white"
+                >
+                  <option value="normal">Normal</option>
+                  <option value="grande">Grande</option>
+                  <option value="contenido">Contenido</option>
+                </select>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

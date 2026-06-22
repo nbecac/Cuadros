@@ -16,7 +16,11 @@ export const demoData: CatalogData = {
       creadoEn: new Date().toISOString(),
       actualizadoEn: new Date().toISOString(),
       categoriaId: '11111111-1111-4111-a111-111111111111',
-      // Using CSS gradient placeholder as default
+      tamanoTarjeta: 'mediano',
+      proporcionTarjeta: 'vertical',
+      ajusteImagen: 'cover',
+      posicionImagen: 'center',
+      tamanoModal: 'normal',
     },
     {
       id: generateId(),
@@ -31,6 +35,11 @@ export const demoData: CatalogData = {
       creadoEn: new Date().toISOString(),
       actualizadoEn: new Date().toISOString(),
       categoriaId: '11111111-1111-4111-a111-111111111111',
+      tamanoTarjeta: 'mediano',
+      proporcionTarjeta: 'vertical',
+      ajusteImagen: 'cover',
+      posicionImagen: 'center',
+      tamanoModal: 'normal',
     },
     {
       id: generateId(),
@@ -43,6 +52,11 @@ export const demoData: CatalogData = {
       creadoEn: new Date().toISOString(),
       actualizadoEn: new Date().toISOString(),
       categoriaId: '22222222-2222-4222-a222-222222222222',
+      tamanoTarjeta: 'mediano',
+      proporcionTarjeta: 'vertical',
+      ajusteImagen: 'cover',
+      posicionImagen: 'center',
+      tamanoModal: 'normal',
     }
   ],
   categories: [

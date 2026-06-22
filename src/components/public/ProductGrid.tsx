@@ -47,11 +47,19 @@ const ProductGrid: React.FC<ProductGridProps> = ({ selectedCategory }) => {
   return (
     <>
       <div className={getGridClass()}>
-        {visibleProducts.map(product => (
-          <div key={product.id} className={design.estiloGrilla === 'masonry' ? 'masonry-item' : ''}>
-            <ProductCard product={product} onClick={() => setSelectedProduct(product)} />
-          </div>
-        ))}
+        {visibleProducts.map(product => {
+          const isLarge = product.tamanoTarjeta === 'grande' && design.estiloGrilla !== 'masonry';
+          const colSpanClass = isLarge ? 'lg:col-span-2' : '';
+          
+          return (
+            <div 
+              key={product.id} 
+              className={`${design.estiloGrilla === 'masonry' ? 'masonry-item' : ''} ${colSpanClass}`.trim()}
+            >
+              <ProductCard product={product} onClick={() => setSelectedProduct(product)} />
+            </div>
+          );
+        })}
       </div>
       
       {selectedProduct && (

@@ -10,6 +10,12 @@ interface ProductModalProps {
   onClose: () => void;
 }
 
+const modalImageSizeMap: Record<string, string> = {
+  normal: 'max-h-[65vh]',
+  grande: 'max-h-[75vh]',
+  contenido: 'max-h-[55vh]',
+};
+
 const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
   const { contact } = useCatalogStore();
   const isSold = product.estado === 'vendido';
@@ -18,6 +24,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
   const images = [product.imagenPrincipal, ...(product.galeria || [])].filter(Boolean) as string[];
   const [activeIndex, setActiveIndex] = useState(0);
   const activeImage = images[activeIndex];
+
+  const modalImageSizeClass = modalImageSizeMap[product.tamanoModal || 'normal'] || 'max-h-[65vh]';
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -81,7 +89,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, onClose }) => {
               <img 
                 src={activeImage} 
                 alt={product.titulo || 'Obra'} 
-                className="w-full max-h-[75vh] object-contain shadow-sm"
+                className={`w-full ${modalImageSizeClass} object-contain shadow-sm`}
               />
 
               {images.length > 1 && (
